@@ -1,0 +1,75 @@
+@import 'tailwindcss';
+
+@theme {
+  /* Color — papel y tinta */
+  --color-paper: #f7f3ec;
+  --color-paper-warm: #efe7da;
+  --color-ink: #1f1b16;
+  --color-ink-soft: #5a5248;
+  --color-seal: #8c2f1b;
+  --color-seal-hover: #a63a22;
+  --color-gold: #b0894b;
+  --color-success: #3e6b4f;
+  --color-error: #9b3b2e;
+
+  /* Tipografía (variables inyectadas por next/font en <html>) */
+  --font-serif: var(--font-newsreader), 'Iowan Old Style', Georgia, serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), monospace;
+
+  /* Escala */
+  --radius-paper: 4px;
+  --shadow-paper:
+    0 1px 3px rgb(31 27 22 / 0.08), 0 8px 24px rgb(31 27 22 / 0.06);
+}
+
+html {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Papel con grano sutil para superficies de carta */
+.paper-surface {
+  background-color: var(--color-paper);
+  background-image: radial-gradient(
+    rgb(31 27 22 / 0.025) 1px,
+    transparent 1px
+  );
+  background-size: 5px 5px;
+}
+
+/* Cuerpo de carta: lectura serif */
+.letter-body {
+  font-family: var(--font-serif);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+/* Editor sin chrome: quitar el outline del textarea */
+.letter-textarea {
+  font-family: var(--font-serif);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  resize: none;
+  outline: none;
+  background: transparent;
+  caret-color: var(--color-seal);
+}
+
+/* Evitar zoom raro de iOS en inputs (<16px dispara zoom) */
+@media (max-width: 640px) {
+  input,
+  textarea,
+  select {
+    font-size: 16px;
+  }
+}
+
+/* Safe areas iOS */
+.safe-bottom {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
