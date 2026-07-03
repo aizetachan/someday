@@ -3,11 +3,11 @@ import {
   onDocumentUpdated,
 } from 'firebase-functions/v2/firestore';
 import { logger } from 'firebase-functions/v2';
-import { Timestamp, getFirestore } from 'firebase-admin/firestore';
+import { Timestamp } from 'firebase-admin/firestore';
 import * as React from 'react';
 import { APP_URL, REGION, RESEND_API_KEY } from './config';
 import { enqueueExactDelivery } from './deliverLetters';
-import { LetterSealedEmail, WelcomeEmail } from './emails/templates';
+import { WelcomeEmail } from './emails/templates';
 import { sendEmail } from './mail';
 import { updateUserStats } from './stats';
 
@@ -32,9 +32,12 @@ export const onUserCreated = onDocumentCreated(
   },
 );
 
-/** Confirmación al sellar (draft → sealed) + actualización de stats. */
+/**
+ * Al sellar (draft → sealed): stats + programación de la entrega exacta.
+ * Sin email de confirmación: la plataforma ya informa al autor.
+ */
 export const onLetterSealed = onDocumentUpdated(
-  { document: 'letters/{letterId}', region: REGION, secrets: [RESEND_API_KEY] },
+  { document: 'letters/{letterId}', region: REGION },
   async (event) => {
     const before = event.data?.before.data();
     const after = event.data?.after.data();
@@ -56,31 +59,6 @@ export const onLetterSealed = onDocumentUpdated(
           err: String(err),
         });
       }
-    }
-
-    try {
-      const db = getFirestore();
-      const author = await db.collection('users').doc(after.authorUid as string).get();
-      const email = author.data()?.email as string | undefined;
-      if (!email) return;
-
-      await sendEmail({
-        to: email,
-        subject: 'Tu carta está sellada y en camino',
-        template: React.createElement(LetterSealedEmail, {
-          authorName: (author.data()?.displayName as string) ?? '',
-          deliveryAt: (after.deliveryDate as Timestamp).toDate(),
-          recipientLabel:
-            after.recipientType === 'self'
-              ? 'tu futuro yo'
-              : (after.recipientName as string),
-        }),
-      });
-    } catch (err) {
-      logger.error('Fallo enviando confirmación de sellado', {
-        id: event.params.letterId,
-        err: String(err),
-      });
     }
   },
 );
