@@ -9,7 +9,11 @@ import {
 import { getFunctions as getAdminFunctions } from 'firebase-admin/functions';
 import * as React from 'react';
 import { APP_URL, MAX_DELIVERY_ATTEMPTS, REGION, RESEND_API_KEY } from './config';
-import { DeliveryFailedEmail, LetterDeliveryEmail } from './emails/templates';
+import {
+  DeliveryFailedEmail,
+  LetterContentEmail,
+  LetterDeliveryEmail,
+} from './emails/templates';
 import { sendEmail } from './mail';
 import { updateUserStats } from './stats';
 
@@ -127,23 +131,40 @@ export async function deliverOne(doc: QueryDocumentSnapshot): Promise<void> {
       // autor borrado — carta a otro que se entrega igualmente
     }
 
-    // 3. Enviar. El email NUNCA contiene el cuerpo: solo el enlace de apertura.
+    // 3. Enviar.
+    //    - self: el email lleva solo el enlace — abrirla en la plataforma
+    //      es la ceremonia.
+    //    - other: el destinatario no tiene cuenta; recibe la carta COMPLETA
+    //      en el email (más un enlace opcional a la plataforma).
     const writtenAt = (letter.createdAt as Timestamp).toDate();
     const deliveryAt = (letter.deliveryDate as Timestamp).toDate();
+    const openUrl = `${APP_URL.value()}/abrir/${doc.id}?t=${letter.openToken}`;
+    const template =
+      letter.recipientType === 'self'
+        ? React.createElement(LetterDeliveryEmail, {
+            recipientName: letter.recipientName ?? '',
+            recipientType: letter.recipientType,
+            authorName,
+            writtenAt,
+            deliveryAt,
+            openUrl,
+          })
+        : React.createElement(LetterContentEmail, {
+            recipientName: letter.recipientName ?? '',
+            authorName,
+            subject: (letter.subject as string) ?? '',
+            body: (letter.body as string) ?? '',
+            writtenAt,
+            deliveryAt,
+            openUrl,
+          });
     await sendEmail({
       to: letter.recipientEmail,
       subject:
         letter.recipientType === 'self'
           ? '📮 Tu yo del pasado te escribió una carta'
           : `📮 ${letter.recipientName}, tienes una carta escrita hace tiempo`,
-      template: React.createElement(LetterDeliveryEmail, {
-        recipientName: letter.recipientName ?? '',
-        recipientType: letter.recipientType,
-        authorName,
-        writtenAt,
-        deliveryAt,
-        openUrl: `${APP_URL.value()}/abrir/${doc.id}?t=${letter.openToken}`,
-      }),
+      template,
       // Cartas a otros: responder al email escribe al autor real
       ...(letter.recipientType === 'other' && authorEmail
         ? { replyTo: authorEmail }

@@ -94,6 +94,84 @@ export function LetterDeliveryEmail({
 }
 
 // ---------------------------------------------------------------------------
+// letter-content — entrega directa a otra persona: la carta VA en el email
+// ---------------------------------------------------------------------------
+
+export function LetterContentEmail({
+  recipientName,
+  authorName,
+  subject,
+  body,
+  writtenAt,
+  deliveryAt,
+  openUrl,
+}: {
+  recipientName: string;
+  authorName: string;
+  subject: string;
+  body: string;
+  writtenAt: Date;
+  deliveryAt: Date;
+  openUrl: string;
+}) {
+  const traveled = humanDistance(writtenAt, deliveryAt);
+  return (
+    <EmailLayout preview="Una carta del pasado ha llegado a su destino.">
+      <SealDot />
+      <Text style={{ ...meta, textAlign: 'center' as const }}>
+        {authorName || 'Alguien'} escribió esta carta el {formatDateEs(writtenAt)} ·
+        ha esperado {traveled} para encontrarte
+        {recipientName ? `, ${recipientName}` : ''}
+      </Text>
+      <Heading style={{ ...h1, margin: '20px 0 20px', textAlign: 'center' as const }}>
+        {subject || 'Una carta para ti'}
+      </Heading>
+      <Section
+        style={{
+          backgroundColor: palette.paper,
+          border: `1px solid ${palette.paperWarm}`,
+          borderRadius: 4,
+          padding: '28px 24px',
+        }}
+      >
+        <Text
+          style={{
+            color: palette.ink,
+            fontFamily: serif,
+            fontSize: 17,
+            lineHeight: '28px',
+            margin: 0,
+            whiteSpace: 'pre-wrap' as const,
+          }}
+        >
+          {body}
+        </Text>
+      </Section>
+      <Text
+        style={{
+          color: palette.inkSoft,
+          fontFamily: serif,
+          fontSize: 14,
+          fontStyle: 'italic',
+          margin: '20px 0 4px',
+        }}
+      >
+        — {authorName || 'Alguien que pensó en ti'}. Puedes responder a este
+        email para escribirle.
+      </Text>
+      <Text style={{ margin: '16px 0 0' }}>
+        <a
+          href={openUrl}
+          style={{ color: palette.seal, fontFamily: sans, fontSize: 13 }}
+        >
+          Ver la carta en Cartas al Futuro →
+        </a>
+      </Text>
+    </EmailLayout>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // letter-sealed — confirmación al sellar
 // ---------------------------------------------------------------------------
 
