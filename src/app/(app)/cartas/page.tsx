@@ -1,17 +1,17 @@
 'use client';
 
 import Link from 'next/link';
-import { Mailbox, PenLine } from 'lucide-react';
-import { LetterCard } from '@/components/letters/LetterCard';
-import { LetterTimeline } from '@/components/letters/LetterTimeline';
+import { DeskEmpty } from '@/components/desk/DeskEmpty';
+import { DeskEnvelope } from '@/components/desk/DeskEnvelope';
+import { ParAvionEnvelope } from '@/components/desk/ParAvionEnvelope';
 import { Spinner } from '@/components/ui/Spinner';
 import { useAuth } from '@/hooks/useAuth';
 import { useLetters } from '@/hooks/useLetters';
-import { countdownLabel } from '@/lib/dates';
 
 /**
- * El buzón: cartas en camino en una línea temporal, y las ya enviadas
- * (entregadas o abiertas) debajo, relegibles para siempre.
+ * El escritorio: las cartas reposan sobre la mesa. La próxima en llegar es
+ * un sobre par avion sellado; las entregadas, sobres C6 — solo las abiertas
+ * dejan asomar su primera línea.
  */
 export default function CartasPage() {
   const { user } = useAuth();
@@ -20,111 +20,122 @@ export default function CartasPage() {
   if (loading) return <Spinner label="Buscando tus cartas…" />;
 
   const firstName = (user?.displayName ?? '').split(' ')[0];
-  const next = inTransit.length
-    ? [...inTransit].sort(
-        (a, b) => a.deliveryDate.toMillis() - b.deliveryDate.toMillis(),
-      )[0]
-    : null;
-  const empty = inTransit.length === 0 && delivered.length === 0 && failed.length === 0;
+
+  const sortedTransit = [...inTransit].sort(
+    (a, b) => a.deliveryDate.toMillis() - b.deliveryDate.toMillis(),
+  );
+  const next = sortedTransit[0] ?? null;
+  const restTransit = sortedTransit.slice(1);
+  const sortedDelivered = [...delivered].sort(
+    (a, b) =>
+      (b.deliveredAt?.toMillis() ?? b.deliveryDate.toMillis()) -
+      (a.deliveredAt?.toMillis() ?? a.deliveryDate.toMillis()),
+  );
+  const empty = !inTransit.length && !delivered.length && !failed.length;
+
+  const resumen = empty
+    ? 'tu escritorio te espera'
+    : [
+        inTransit.length
+          ? `${inTransit.length} ${inTransit.length === 1 ? 'carta en camino' : 'cartas en camino'}`
+          : null,
+        delivered.length
+          ? `${delivered.length} ${delivered.length === 1 ? 'entregada' : 'entregadas'}`
+          : null,
+        failed.length
+          ? `${failed.length} ${failed.length === 1 ? 'devuelta' : 'devueltas'}`
+          : null,
+      ]
+        .filter(Boolean)
+        .join(' · ');
+
+  const hasTransitColumn = Boolean(next);
 
   return (
-    <div className="mx-auto max-w-3xl px-5 py-10">
-      <h1 className="font-serif text-3xl text-ink">
-        {firstName ? `Tu buzón, ${firstName}` : 'Tu buzón'}
+    <div className="mx-auto w-full max-w-[560px] px-6 pb-[calc(120px+env(safe-area-inset-bottom))] lg:max-w-5xl">
+      <h1 className="posa mt-6 font-hand text-[38px] font-semibold leading-none text-[#2e2820]">
+        Hola{firstName ? `, ${firstName}` : ''}
       </h1>
+      <p
+        className="posa mt-1.5 font-hand text-xl text-gris-postal"
+        style={{ '--posa-delay': '0.05s' } as React.CSSProperties}
+      >
+        {resumen}
+      </p>
 
       {empty ? (
-        <div className="flex flex-col items-center gap-5 py-24 text-center">
-          <Mailbox size={56} strokeWidth={1} className="text-ink-soft/40" />
-          <div>
-            <p className="font-serif text-xl text-ink">
-              Todavía no hay cartas viajando en el tiempo
-            </p>
-            <p className="mt-1.5 text-sm text-ink-soft">
-              La primera es siempre la más difícil de empezar — y la mejor de recibir.
-            </p>
-          </div>
-          <Link
-            href="/escribir"
-            className="flex items-center gap-2 rounded-[4px] bg-seal px-6 py-3 text-sm font-medium text-paper hover:bg-seal-hover"
-          >
-            <PenLine size={16} strokeWidth={1.5} /> Escribir mi primera carta
-          </Link>
-        </div>
+        <DeskEmpty />
       ) : (
-        <>
-          {/* Resumen */}
-          <div className="mt-8 grid grid-cols-3 gap-2 sm:gap-3">
-            <div className="paper-surface rounded-[4px] border border-ink-soft/15 p-3 sm:p-4">
-              <p className="font-mono text-lg text-seal sm:text-2xl">{inTransit.length}</p>
-              <p className="mt-1 text-[11px] text-ink-soft sm:text-xs">en camino</p>
-            </div>
-            <div className="paper-surface rounded-[4px] border border-ink-soft/15 p-3 sm:p-4">
-              <p className="font-mono text-lg text-success sm:text-2xl">{delivered.length}</p>
-              <p className="mt-1 text-[11px] text-ink-soft sm:text-xs">entregadas</p>
-            </div>
-            <div className="paper-surface rounded-[4px] border border-ink-soft/15 p-3 sm:p-4">
-              <p className="truncate font-mono text-lg text-gold sm:text-2xl">
-                {next ? countdownLabel(next.deliveryDate.toDate()).replace(/^faltan? /, '') : '—'}
-              </p>
-              <p className="mt-1 text-[11px] text-ink-soft sm:text-xs">próxima entrega</p>
-            </div>
-          </div>
+        <div
+          className={
+            hasTransitColumn
+              ? 'mt-10 lg:grid lg:grid-cols-[440px_minmax(0,1fr)] lg:items-start lg:gap-16'
+              : 'mt-10'
+          }
+        >
+          {hasTransitColumn && (
+            <div>
+              <section>
+                <p className="grupo">Próximo envío</p>
+                <ParAvionEnvelope letter={next!} />
+              </section>
 
-          {/* En camino */}
-          <section className="mt-12">
-            <div className="flex items-baseline justify-between">
-              <h2 className="font-serif text-xl text-ink">En camino</h2>
-              <span className="text-xs text-ink-soft">
-                cerradas hasta su fecha — también para ti
-              </span>
+              {restTransit.length > 0 && (
+                <section className="mt-16">
+                  <p className="grupo">También en camino</p>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-9 sm:grid-cols-3 lg:grid-cols-2">
+                    {restTransit.map((letter, i) => (
+                      <DeskEnvelope key={letter.id} letter={letter} index={i} />
+                    ))}
+                  </div>
+                </section>
+              )}
             </div>
-            {inTransit.length ? (
-              <div className="mt-6">
-                <LetterTimeline letters={inTransit} />
-              </div>
-            ) : (
-              <p className="mt-4 rounded-[4px] border border-dashed border-ink-soft/25 p-5 text-center text-sm text-ink-soft">
-                Ninguna carta viajando ahora mismo.{' '}
-                <Link href="/escribir" className="text-seal underline-offset-4 hover:underline">
-                  Escribe una →
-                </Link>
-              </p>
-            )}
-          </section>
-
-          {/* Fallidas (si las hay) */}
-          {failed.length > 0 && (
-            <section className="mt-12">
-              <h2 className="font-serif text-xl text-error">Necesitan tu atención</h2>
-              <div className="mt-4 flex flex-col gap-3">
-                {failed.map((letter) => (
-                  <LetterCard key={letter.id} letter={letter} />
-                ))}
-              </div>
-            </section>
           )}
 
-          {/* Enviadas */}
-          <section className="mt-12">
-            <div className="flex items-baseline justify-between">
-              <h2 className="font-serif text-xl text-ink">Enviadas</h2>
-              <span className="text-xs text-ink-soft">relegibles para siempre</span>
-            </div>
-            {delivered.length ? (
-              <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                {delivered.map((letter) => (
-                  <LetterCard key={letter.id} letter={letter} />
-                ))}
-              </div>
-            ) : (
-              <p className="mt-4 rounded-[4px] border border-dashed border-ink-soft/25 p-5 text-center text-sm text-ink-soft">
-                Ninguna carta ha llegado aún a su destino. Llegarán.
-              </p>
+          <div>
+            {failed.length > 0 && (
+              <section className={hasTransitColumn ? 'mt-16 lg:mt-0' : ''}>
+                <p className="grupo !text-[#a23325]">
+                  Devueltas — necesitan tu atención
+                </p>
+                <div className="grid grid-cols-2 gap-x-4 gap-y-9 sm:grid-cols-3">
+                  {failed.map((letter, i) => (
+                    <DeskEnvelope key={letter.id} letter={letter} index={i} />
+                  ))}
+                </div>
+              </section>
             )}
-          </section>
-        </>
+
+            {sortedDelivered.length > 0 && (
+              <section
+                className={
+                  failed.length > 0
+                    ? 'mt-16'
+                    : hasTransitColumn
+                      ? 'mt-16 lg:mt-0'
+                      : ''
+                }
+              >
+                <p className="grupo">Entregadas — relegibles para siempre</p>
+                <div className="grid grid-cols-2 gap-x-4 gap-y-9 sm:grid-cols-3">
+                  {sortedDelivered.map((letter, i) => (
+                    <DeskEnvelope key={letter.id} letter={letter} index={i} />
+                  ))}
+                </div>
+              </section>
+            )}
+          </div>
+        </div>
       )}
+
+      {/* CTA flotante: la pluma siempre a mano */}
+      <Link
+        href="/escribir"
+        className="fixed bottom-[calc(24px+env(safe-area-inset-bottom))] left-1/2 z-20 -translate-x-1/2 whitespace-nowrap rounded-full bg-gradient-to-b from-[#3a3226] to-[#241e15] px-8 pb-4 pt-3 font-hand text-[22px] font-semibold leading-none text-[#f6f1e6] shadow-[0_2px_4px_rgba(36,30,21,0.3),0_12px_26px_rgba(36,30,21,0.35),inset_0_1px_0_rgba(255,255,255,0.12)] transition-transform hover:-translate-y-0.5"
+      >
+        ✎ Escribir una carta
+      </Link>
     </div>
   );
 }

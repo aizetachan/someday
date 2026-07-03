@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, JetBrains_Mono, Newsreader } from 'next/font/google';
+import { Caveat, Inter, JetBrains_Mono, Newsreader } from 'next/font/google';
 import { AuthProvider } from '@/hooks/useAuth';
 import './globals.css';
 
@@ -17,6 +17,12 @@ const inter = Inter({
 const jetbrains = JetBrains_Mono({
   subsets: ['latin'],
   variable: '--font-jetbrains',
+});
+
+// Manuscrita: direcciones de sobre, saludos del escritorio
+const caveat = Caveat({
+  subsets: ['latin'],
+  variable: '--font-caveat',
 });
 
 export const metadata: Metadata = {
@@ -41,7 +47,7 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${newsreader.variable} ${inter.variable} ${jetbrains.variable}`}
+      className={`${newsreader.variable} ${inter.variable} ${jetbrains.variable} ${caveat.variable}`}
     >
       <body className="min-h-dvh bg-paper text-ink">
         <AuthProvider>{children}</AuthProvider>

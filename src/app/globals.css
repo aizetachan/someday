@@ -12,10 +12,16 @@
   --color-success: #3e6b4f;
   --color-error: #9b3b2e;
 
+  /* Color — el escritorio (mesa de madera y correo postal) */
+  --color-madera: #d8ccba;
+  --color-tinta-pluma: #2b3a5c;
+  --color-gris-postal: #93887a;
+
   /* Tipografía (variables inyectadas por next/font en <html>) */
   --font-serif: var(--font-newsreader), 'Iowan Old Style', Georgia, serif;
   --font-sans: var(--font-inter), system-ui, sans-serif;
   --font-mono: var(--font-jetbrains), monospace;
+  --font-hand: var(--font-caveat), cursive;
 
   /* Escala */
   --radius-paper: 4px;
@@ -72,4 +78,487 @@ html {
 /* Safe areas iOS */
 .safe-bottom {
   padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+/* ==========================================================================
+   El escritorio — la mesa de madera donde reposan las cartas
+   ========================================================================== */
+
+.desk-bg {
+  position: relative;
+  background: radial-gradient(
+    120% 90% at 50% 0%,
+    #e4d9c6 0%,
+    var(--color-madera) 55%,
+    #c7b9a3 100%
+  );
+}
+/* fibra de la superficie */
+.desk-bg::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* etiqueta de grupo: PRÓXIMO ENVÍO, ENTREGADAS… */
+.grupo {
+  margin: 0 0 22px 4px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-gris-postal);
+}
+
+/* ---------- Sobre par avion (próximo envío) ---------- */
+
+.paravion {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  aspect-ratio: 229 / 140; /* proporción postal real (≈C6/5) */
+  width: 100%;
+  border-radius: 3px;
+  padding: 22px 22px 20px;
+  background: linear-gradient(168deg, #faf6ec 0%, #f6f1e6 45%, #efe8d8 100%);
+  box-shadow:
+    0 1px 1px rgb(46 40 32 / 0.1),
+    0 3px 5px rgb(46 40 32 / 0.09),
+    0 14px 28px rgb(46 40 32 / 0.18),
+    inset 0 1px 0 rgb(255 255 255 / 0.7);
+  transform: rotate(-1.2deg);
+}
+/* borde par avion: franjas rojas y azules */
+.paravion::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 3px;
+  padding: 6px;
+  background: repeating-linear-gradient(
+    45deg,
+    #b03a2e 0 12px,
+    #f6f1e6 12px 18px,
+    #2c4a7c 18px 30px,
+    #f6f1e6 30px 36px
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  opacity: 0.82;
+}
+/* pliegue de luz del papel */
+.paravion::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 3px;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    rgb(255 255 255 / 0.35) 0%,
+    transparent 30%,
+    transparent 70%,
+    rgb(46 40 32 / 0.05) 100%
+  );
+}
+
+/* sello de correos: borde dentado — los agujeros solo perforan el marco,
+   el interior queda cubierto por el motivo */
+.estampilla {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 2;
+  width: 52px;
+  height: 64px;
+  padding: 4px;
+  transform: rotate(2.5deg);
+  filter: drop-shadow(0 1px 2px rgb(46 40 32 / 0.3));
+  --r: 2.8px;
+  background: radial-gradient(
+      circle var(--r) at var(--r) var(--r),
+      transparent 98%,
+      #fcfaf3
+    )
+    calc(-1 * var(--r)) calc(-1 * var(--r)) / calc(2.55 * var(--r))
+    calc(2.55 * var(--r));
+}
+.estampilla .motivo {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: linear-gradient(180deg, #c7d6e8 0%, #e8dcc4 55%, #b99b6b 100%);
+}
+.estampilla .motivo::before {
+  /* sol */
+  content: '';
+  position: absolute;
+  top: 9px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #f4e3b2, #e8c97e);
+  box-shadow: 0 0 8px rgb(244 227 178 / 0.9);
+}
+.estampilla .valor {
+  padding: 3px 0 4px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.02em;
+  text-align: center;
+  color: #3a3227;
+  background: rgb(252 250 243 / 0.75);
+}
+
+/* matasellos ondulado sobre el sello */
+.ondas {
+  position: absolute;
+  top: 26px;
+  right: 56px;
+  z-index: 3;
+  width: 58px;
+  height: 30px;
+  opacity: 0.4;
+  transform: rotate(-4deg);
+}
+.ondas span {
+  display: block;
+  height: 2px;
+  margin-bottom: 5px;
+  border-radius: 2px;
+  background: repeating-linear-gradient(90deg, #4a4238 0 10px, transparent 10px 15px);
+}
+
+.para {
+  margin-bottom: 4px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-gris-postal);
+}
+.direccion {
+  font-family: var(--font-hand);
+  font-size: 25px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--color-tinta-pluma);
+}
+.direccion small {
+  display: block;
+  font-size: 18px;
+  opacity: 0.75;
+}
+
+.nota-fecha {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: 14px;
+}
+.faltan {
+  display: inline-block;
+  padding-bottom: 1px;
+  font-family: var(--font-hand);
+  font-size: 20px;
+  color: var(--color-tinta-pluma);
+  border-bottom: 1.5px solid rgb(43 58 92 / 0.3);
+  transform: rotate(-1deg);
+}
+.faltan b {
+  font-size: 27px;
+  font-weight: 600;
+}
+.escrita-el {
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  line-height: 1.7;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-align: right;
+  color: var(--color-gris-postal);
+}
+
+/* lacre real, con el monograma de la app */
+.lacre {
+  position: absolute;
+  bottom: -21px;
+  left: 50%;
+  z-index: 4;
+  width: 52px;
+  height: 50px;
+  transform: translateX(-50%) rotate(-3deg);
+  border-radius: 48% 52% 55% 45% / 52% 48% 52% 48%;
+  background: radial-gradient(
+    circle at 32% 26%,
+    #b5573f 0%,
+    #8e3a26 34%,
+    var(--color-seal) 62%,
+    #571d10 100%
+  );
+  box-shadow:
+    0 4px 10px rgb(87 29 16 / 0.45),
+    inset 0 2px 3px rgb(255 255 255 / 0.22),
+    inset 0 -3px 5px rgb(0 0 0 / 0.3);
+}
+.lacre::before {
+  /* rebaba de cera */
+  content: '';
+  position: absolute;
+  inset: -5px;
+  z-index: -1;
+  border-radius: 55% 45% 48% 52% / 45% 55% 45% 55%;
+  background: radial-gradient(circle at 40% 35%, #94402b, #6e2716 70%);
+  opacity: 0.85;
+}
+.lacre::after {
+  /* monograma estampado: el icono de la app */
+  content: 'C';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 21px;
+  color: rgb(255 235 225 / 0.55);
+  text-shadow:
+    0 1px 1px rgb(0 0 0 / 0.5),
+    0 -1px 1px rgb(255 255 255 / 0.15);
+}
+
+/* ---------- Sobres C6 (entregadas, en camino, devueltas) ---------- */
+
+.sobre-c6 {
+  position: relative;
+  filter: drop-shadow(0 7px 14px rgb(46 40 32 / 0.16));
+}
+
+/* carta asomando por detrás, con la primera línea del mensaje */
+.hoja {
+  position: relative;
+  top: 12px;
+  z-index: 1;
+  margin: 0 9px;
+  padding: 11px 12px 22px;
+  border-radius: 2px 2px 0 0;
+  background: linear-gradient(180deg, #fdfbf4, #f8f4e9);
+  box-shadow:
+    0 -1px 3px rgb(46 40 32 / 0.08),
+    inset 0 -12px 10px -10px rgb(46 40 32 / 0.12);
+  transform: rotate(-0.5deg);
+}
+.hoja .primera-linea {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-family: var(--font-hand);
+  font-size: 16.5px;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--color-tinta-pluma);
+}
+.hoja .primera-linea::after {
+  content: '…';
+}
+.hoja .lineas {
+  margin-top: 6px;
+}
+.hoja .lineas i {
+  display: block;
+  height: 1.5px;
+  margin-bottom: 6px;
+  border-radius: 2px;
+  background: rgb(43 58 92 / 0.16);
+}
+.hoja .lineas i:last-child {
+  width: 64%;
+}
+
+/* cuerpo del sobre: proporción C6 real (162×114 ≈ 1.42:1) */
+.bolsillo {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  aspect-ratio: 162 / 114;
+  padding: 12px 13px;
+  border-radius: 3px;
+  background: linear-gradient(172deg, #f4eee0, #ebe2ce);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.6),
+    0 1px 2px rgb(46 40 32 / 0.12);
+}
+/* costuras diagonales del reverso del sobre */
+.bolsillo::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 3px;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      to bottom right,
+      transparent calc(50% - 0.8px),
+      rgb(46 40 32 / 0.09) 50%,
+      transparent calc(50% + 0.8px)
+    ),
+    linear-gradient(
+      to bottom left,
+      transparent calc(50% - 0.8px),
+      rgb(46 40 32 / 0.09) 50%,
+      transparent calc(50% + 0.8px)
+    );
+}
+.bolsillo .para-mini {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-gris-postal);
+}
+.bolsillo .titulo {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-hand);
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--color-tinta-pluma);
+}
+.bolsillo .viajo {
+  margin-top: 4px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-gris-postal);
+}
+
+/* lacre roto en los abiertos: dos mitades */
+.lacre-roto {
+  position: absolute;
+  top: -8px;
+  right: 12px;
+  z-index: 3;
+  width: 26px;
+  height: 23px;
+}
+.lacre-roto i {
+  position: absolute;
+  width: 14px;
+  height: 19px;
+  background: radial-gradient(circle at 35% 30%, #a64b34, var(--color-seal) 70%);
+  box-shadow:
+    0 2px 4px rgb(87 29 16 / 0.35),
+    inset 0 1px 2px rgb(255 255 255 / 0.18);
+}
+.lacre-roto i:first-child {
+  left: 0;
+  border-radius: 10px 3px 4px 9px;
+  transform: rotate(-12deg);
+}
+.lacre-roto i:last-child {
+  right: 0;
+  top: 3px;
+  border-radius: 3px 10px 9px 4px;
+  transform: rotate(14deg);
+}
+
+/* lacre intacto pequeño (entregada sin abrir, en camino) */
+.lacre-mini {
+  position: absolute;
+  top: -9px;
+  right: 12px;
+  z-index: 3;
+  width: 26px;
+  height: 25px;
+  border-radius: 48% 52% 55% 45% / 52% 48% 52% 48%;
+  background: radial-gradient(
+    circle at 32% 26%,
+    #b5573f 0%,
+    #8e3a26 34%,
+    var(--color-seal) 62%,
+    #571d10 100%
+  );
+  box-shadow:
+    0 2px 5px rgb(87 29 16 / 0.4),
+    inset 0 1px 2px rgb(255 255 255 / 0.2),
+    inset 0 -2px 3px rgb(0 0 0 / 0.3);
+}
+
+/* tampón DEVUELTA en las fallidas */
+.sello-devuelta {
+  position: absolute;
+  top: -10px;
+  right: 8px;
+  z-index: 3;
+  padding: 3px 7px 2px;
+  border: 1.5px solid #a23325;
+  border-radius: 2px;
+  background: rgb(246 241 230 / 0.6);
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #a23325;
+  transform: rotate(6deg);
+  opacity: 0.9;
+}
+
+/* hoja en blanco del estado vacío */
+.hoja-vacia {
+  position: relative;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #fdfbf4, #f6f1e6);
+  box-shadow:
+    0 1px 2px rgb(46 40 32 / 0.1),
+    0 12px 26px rgb(46 40 32 / 0.18);
+  transform: rotate(-1deg);
+}
+.hoja-vacia .renglon {
+  display: block;
+  height: 1.5px;
+  margin-top: 20px;
+  border-radius: 2px;
+  background: rgb(43 58 92 / 0.13);
+}
+.hoja-vacia .renglon:last-of-type {
+  width: 55%;
+}
+
+/* las cartas se posan en la mesa al entrar */
+@media (prefers-reduced-motion: no-preference) {
+  .posa {
+    animation: posa 0.6s cubic-bezier(0.3, 0.7, 0.35, 1) both;
+    animation-delay: var(--posa-delay, 0s);
+  }
+  @keyframes posa {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+  }
 }
