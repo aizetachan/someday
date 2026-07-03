@@ -6,7 +6,6 @@ import {
   doc,
   getDoc,
   onSnapshot,
-  orderBy,
   query,
   serverTimestamp,
   setDoc,
@@ -164,12 +163,22 @@ export function subscribeAuthoredLetters(
   authorUid: string,
   cb: (letters: Letter[]) => void,
 ): Unsubscribe {
-  const q = query(
-    collection(db(), 'letters'),
-    where('authorUid', '==', authorUid),
-    orderBy('deliveryDate', 'asc'),
+  // Solo igualdad: no depende de índices compuestos. El orden se aplica
+  // en memoria (las cartas de un usuario son pocas).
+  const q = query(collection(db(), 'letters'), where('authorUid', '==', authorUid));
+  return onSnapshot(
+    q,
+    (snap) => {
+      const letters = snap.docs
+        .map(letterFromSnap)
+        .sort((a, b) => (a.deliveryDate?.toMillis() ?? 0) - (b.deliveryDate?.toMillis() ?? 0));
+      cb(letters);
+    },
+    (err) => {
+      console.error('subscribeAuthoredLetters:', err);
+      cb([]); // nunca dejar la UI cargando para siempre
+    },
   );
-  return onSnapshot(q, (snap) => cb(snap.docs.map(letterFromSnap)));
 }
 
 export function subscribeReceivedLetters(
