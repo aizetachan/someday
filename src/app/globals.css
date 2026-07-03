@@ -549,6 +549,41 @@ html {
   width: 55%;
 }
 
+/* la carta abierta: hoja real, con las marcas de haber viajado doblada */
+.hoja-carta {
+  position: relative;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #fdfbf4 0%, #f7f2e6 55%, #f2ebdc 100%);
+  box-shadow:
+    0 1px 2px rgb(46 40 32 / 0.1),
+    0 18px 40px rgb(46 40 32 / 0.2);
+}
+/* dobleces en tercios: sombra fina + brillo del pliegue */
+.hoja-carta::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 3px;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      180deg,
+      transparent calc(33.4% - 2px),
+      rgb(46 40 32 / 0.05) calc(33.4% - 1px),
+      rgb(46 40 32 / 0.05) 33.4%,
+      rgb(255 255 255 / 0.55) calc(33.4% + 1px),
+      transparent calc(33.4% + 2.5px)
+    ),
+    linear-gradient(
+      180deg,
+      transparent calc(66.7% - 2px),
+      rgb(46 40 32 / 0.05) calc(66.7% - 1px),
+      rgb(46 40 32 / 0.05) 66.7%,
+      rgb(255 255 255 / 0.55) calc(66.7% + 1px),
+      transparent calc(66.7% + 2.5px)
+    );
+}
+
 /* hoja de papel sobre la mesa: donde se escribe y se sella */
 .hoja-escritura {
   border-radius: 3px;

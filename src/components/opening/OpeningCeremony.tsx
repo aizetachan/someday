@@ -49,11 +49,18 @@ export function OpeningCeremony({ letter }: { letter: OpenedLetter }) {
     setProgress(p);
     if (p >= 1) {
       setPhase('breaking');
-      setTimeout(() => setPhase('open'), 700);
       return;
     }
     raf.current = requestAnimationFrame(tick);
   }, []);
+
+  // breaking → open como efecto: si el frame del temporizador se pierde,
+  // el efecto lo vuelve a programar y la carta nunca se queda a medias.
+  useEffect(() => {
+    if (phase !== 'breaking') return;
+    const t = setTimeout(() => setPhase('open'), 700);
+    return () => clearTimeout(t);
+  }, [phase]);
 
   const startHold = useCallback(() => {
     if (phase !== 'closed') return;
@@ -64,7 +71,7 @@ export function OpeningCeremony({ letter }: { letter: OpenedLetter }) {
   useEffect(() => () => stopHold(), [stopHold]);
 
   return (
-    <div className="flex min-h-dvh flex-col items-center justify-center px-5 py-12">
+    <div className="flex min-h-[calc(100dvh-88px)] flex-col items-center justify-center px-5 py-10">
       <AnimatePresence mode="wait">
         {phase !== 'open' ? (
           <motion.div
@@ -143,43 +150,47 @@ export function OpeningCeremony({ letter }: { letter: OpenedLetter }) {
             </p>
           </motion.div>
         ) : (
-          <motion.article
+          <motion.div
             key="letter"
-            className="paper-surface w-full max-w-[68ch] rounded-[4px] px-6 py-10 shadow-[var(--shadow-paper)] sm:px-10"
+            className="w-full max-w-[68ch] pb-6"
             initial={{ opacity: 0, y: 32, scaleY: 0.96 }}
             animate={{ opacity: 1, y: 0, scaleY: 1 }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           >
-            <header className="mb-8 border-b border-ink-soft/15 pb-6">
-              <p className="font-mono text-xs text-gold">
+            {/* La carta: una hoja de verdad sobre la mesa */}
+            <article
+              className="hoja-carta px-6 py-10 sm:px-12 sm:py-12"
+              style={{ transform: 'rotate(-0.35deg)' }}
+            >
+              <p className="text-right font-mono text-xs text-gold">
                 {letter.writtenFrom ? `${letter.writtenFrom}, ` : ''}
                 {formatDateEs(written)}
               </p>
-              <h1 className="mt-3 font-serif text-2xl text-ink sm:text-3xl">
+              <h1 className="mt-6 font-serif text-2xl text-ink sm:text-3xl">
                 {letter.subject || 'Una carta para ti'}
               </h1>
-            </header>
 
-            <div className="letter-body text-ink">{letter.body}</div>
+              <div className="letter-body mt-8 text-ink">{letter.body}</div>
 
-            <footer className="mt-12 border-t border-ink-soft/15 pt-6">
-              <p className="font-serif italic text-ink-soft">
-                Escrita por{' '}
-                {letter.recipientType === 'self'
+              <p className="mt-14 font-hand text-[26px] leading-none text-tinta-pluma">
+                — {letter.recipientType === 'self'
                   ? `tu yo de hace ${traveled}`
                   : letter.authorName || 'alguien que pensó en ti'}
-                .
               </p>
+            </article>
+
+            {/* Fuera del papel: la invitación a responder */}
+            <div className="mt-12 text-center">
               <Link
                 href="/escribir"
-                className="mt-6 inline-block rounded-[4px] bg-seal px-6 py-3 text-sm font-medium text-paper transition-colors hover:bg-seal-hover"
+                className="inline-block whitespace-nowrap rounded-full bg-gradient-to-b from-[#3a3226] to-[#241e15] px-8 pb-4 pt-3 font-hand text-[22px] font-semibold leading-none text-[#f6f1e6] shadow-[0_2px_4px_rgba(36,30,21,0.3),0_12px_26px_rgba(36,30,21,0.35),inset_0_1px_0_rgba(255,255,255,0.12)] transition-transform hover:-translate-y-0.5"
               >
                 {letter.recipientType === 'self'
-                  ? 'Respóndete: escribe una carta a tu futuro yo'
-                  : 'Escribe tu propia carta al futuro'}
+                  ? '✎ Respóndete: escribe a tu futuro yo'
+                  : '✎ Escribe tu propia carta al futuro'}
               </Link>
-            </footer>
-          </motion.article>
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>
