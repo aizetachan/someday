@@ -24,7 +24,7 @@ import { updateUserStats } from './stats';
  */
 export const deliverLetters = onSchedule(
   {
-    schedule: 'every 15 minutes',
+    schedule: 'every 5 minutes',
     timeZone: 'UTC',
     region: REGION,
     secrets: [RESEND_API_KEY],
@@ -120,15 +120,27 @@ async function deliverOne(doc: QueryDocumentSnapshot): Promise<void> {
   } catch (err) {
     if ((err as Error).message === 'ALREADY_PROCESSED') return;
 
-    const attempts = ((letter.deliveryAttempts as number) ?? 0) + 1;
-    const failed = attempts >= MAX_DELIVERY_ATTEMPTS;
+    // Un error de configuración (API key inválida, secreto ausente) no es
+    // culpa de la carta: se reintenta indefinidamente sin quemar intentos.
+    const isConfigError = /api key|api_key|validation_error|missing_required_field/i.test(
+      String(err),
+    );
+    const attempts = isConfigError
+      ? ((letter.deliveryAttempts as number) ?? 0)
+      : ((letter.deliveryAttempts as number) ?? 0) + 1;
+    const failed = !isConfigError && attempts >= MAX_DELIVERY_ATTEMPTS;
     await doc.ref.update({
       status: failed ? 'failed' : 'sealed', // reintenta en el próximo tick
       deliveryAttempts: attempts,
       lastDeliveryError: String(err),
       deliveringSince: FieldValue.delete(),
     });
-    logger.error('Fallo de entrega', { id: doc.id, attempts, err: String(err) });
+    logger.error('Fallo de entrega', {
+      id: doc.id,
+      attempts,
+      configError: isConfigError,
+      err: String(err),
+    });
 
     if (failed) await notifyAuthorOfFailure(doc.id, letter);
   }
