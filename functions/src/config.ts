@@ -12,6 +12,12 @@ export const EMAIL_FROM = defineString('EMAIL_FROM', {
   description: 'Remitente de los emails transaccionales',
 });
 
+export const EMAIL_REPLY_TO = defineString('EMAIL_REPLY_TO', {
+  default: '',
+  description:
+    'Reply-to por defecto: el buzón del remitente puede no existir; las respuestas llegan aquí',
+});
+
 export const REGION = 'europe-west1';
 
 export const MAX_DELIVERY_ATTEMPTS = 5;
