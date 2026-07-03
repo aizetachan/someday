@@ -6,6 +6,7 @@ import { logger } from 'firebase-functions/v2';
 import { Timestamp, getFirestore } from 'firebase-admin/firestore';
 import * as React from 'react';
 import { APP_URL, REGION, RESEND_API_KEY } from './config';
+import { enqueueExactDelivery } from './deliverLetters';
 import { LetterSealedEmail, WelcomeEmail } from './emails/templates';
 import { sendEmail } from './mail';
 import { updateUserStats } from './stats';
@@ -41,6 +42,21 @@ export const onLetterSealed = onDocumentUpdated(
     if (!(before.status === 'draft' && after.status === 'sealed')) return;
 
     await updateUserStats(after.authorUid as string);
+
+    // Entrega cercana (<25h): programar ya la tarea a la hora exacta.
+    // Las lejanas las programa el cron cuando entran en su horizonte.
+    const deliveryAt = (after.deliveryDate as Timestamp).toDate();
+    if (deliveryAt.getTime() - Date.now() < 25 * 3_600_000) {
+      try {
+        await enqueueExactDelivery(event.params.letterId, deliveryAt);
+        await event.data!.after.ref.update({ taskScheduled: true });
+      } catch (err) {
+        logger.warn('No se pudo programar entrega exacta al sellar', {
+          id: event.params.letterId,
+          err: String(err),
+        });
+      }
+    }
 
     try {
       const db = getFirestore();

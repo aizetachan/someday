@@ -6,6 +6,7 @@ import {
   getFirestore,
   type QueryDocumentSnapshot,
 } from 'firebase-admin/firestore';
+import { getFunctions as getAdminFunctions } from 'firebase-admin/functions';
 import * as React from 'react';
 import { APP_URL, MAX_DELIVERY_ATTEMPTS, REGION, RESEND_API_KEY } from './config';
 import { DeliveryFailedEmail, LetterDeliveryEmail } from './emails/templates';
@@ -57,10 +58,50 @@ export const deliverLetters = onSchedule(
     for (const doc of due.docs) {
       await deliverOne(doc);
     }
+
+    // Programar entregas exactas (Cloud Tasks) para las próximas 25h.
+    // El cron es la red de seguridad; la tarea dispara al segundo exacto.
+    await scheduleUpcomingDeliveries(db, now);
   },
 );
 
-async function deliverOne(doc: QueryDocumentSnapshot): Promise<void> {
+async function scheduleUpcomingDeliveries(
+  db: FirebaseFirestore.Firestore,
+  now: Timestamp,
+): Promise<void> {
+  const horizon = Timestamp.fromMillis(now.toMillis() + 25 * 3_600_000);
+  const upcoming = await db
+    .collection('letters')
+    .where('status', '==', 'sealed')
+    .where('deliveryDate', '>', now)
+    .where('deliveryDate', '<=', horizon)
+    .limit(200)
+    .get();
+
+  for (const doc of upcoming.docs) {
+    if (doc.data().taskScheduled) continue;
+    try {
+      await enqueueExactDelivery(doc.id, (doc.data().deliveryDate as Timestamp).toDate());
+      await doc.ref.update({ taskScheduled: true });
+    } catch (err) {
+      // El cron entregará igualmente (con hasta 5 min de margen)
+      logger.warn('No se pudo programar entrega exacta', { id: doc.id, err: String(err) });
+    }
+  }
+}
+
+export async function enqueueExactDelivery(
+  letterId: string,
+  deliveryDate: Date,
+): Promise<void> {
+  const queue = getAdminFunctions().taskQueue(
+    `locations/${REGION}/functions/deliverLetterAt`,
+  );
+  await queue.enqueue({ letterId }, { scheduleTime: deliveryDate });
+  logger.info('Entrega exacta programada', { letterId, at: deliveryDate.toISOString() });
+}
+
+export async function deliverOne(doc: QueryDocumentSnapshot): Promise<void> {
   const db = doc.ref.firestore;
   const letter = doc.data();
 
