@@ -24,7 +24,7 @@ export function SealAnimation({ onComplete }: { onComplete: () => void }) {
   }, [onComplete]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-paper">
+    <div className="desk-bg fixed inset-0 z-50 flex items-center justify-center">
       <AnimatePresence>
         {phase !== 'fly' ? (
           <motion.div

@@ -34,6 +34,9 @@ export function OpeningCeremony({ letter }: { letter: OpenedLetter }) {
   const delivered = new Date(letter.deliveryDate);
   const traveled = humanDistance(written, delivered);
 
+  // La cera se va agrietando a medida que se mantiene pulsado
+  const crackStage: 0 | 1 | 2 = progress >= 0.7 ? 2 : progress >= 0.35 ? 1 : 0;
+
   const stopHold = useCallback(() => {
     holdStart.current = null;
     if (raf.current) cancelAnimationFrame(raf.current);
@@ -103,12 +106,16 @@ export function OpeningCeremony({ letter }: { letter: OpenedLetter }) {
                 onPointerUp={stopHold}
                 onPointerLeave={stopHold}
                 onContextMenu={(e) => e.preventDefault()}
-                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer touch-none select-none rounded-full outline-none"
+                className="absolute left-1/2 top-[54%] cursor-pointer touch-none select-none rounded-full outline-none"
                 style={{
                   transform: `translate(-50%, -50%) scale(${1 + progress * 0.08})`,
                 }}
               >
-                <WaxSeal size={84} broken={phase === 'breaking'} />
+                <WaxSeal
+                  size={84}
+                  broken={phase === 'breaking'}
+                  crack={phase === 'closed' ? crackStage : 2}
+                />
                 {/* Anillo de progreso */}
                 {progress > 0 && phase === 'closed' && (
                   <svg

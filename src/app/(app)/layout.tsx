@@ -40,7 +40,13 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   }
 
   if (isEditor) {
-    return <div className="min-h-dvh">{children}</div>;
+    // El editor también escribe sobre la mesa — pero sin cabecera: la hoja
+    // y nada más.
+    return (
+      <div className="desk-bg min-h-dvh">
+        <div className="relative z-[1]">{children}</div>
+      </div>
+    );
   }
 
   return (

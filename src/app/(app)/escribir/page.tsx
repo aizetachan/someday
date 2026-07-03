@@ -85,7 +85,7 @@ export default function EscribirPage() {
   return (
     <div className="min-h-dvh">
       {/* Barra mínima del ritual */}
-      <div className="sticky top-0 z-30 flex items-center justify-between bg-paper/90 px-5 py-3 backdrop-blur">
+      <div className="sticky top-0 z-30 flex items-center justify-between bg-[#e4d9c6]/75 px-5 py-3 backdrop-blur">
         {step === 'seal' ? (
           <button
             type="button"
@@ -134,7 +134,8 @@ export default function EscribirPage() {
       )}
 
       {step === 'seal' && (
-        <div className="mx-auto max-w-xl px-5 py-10 pb-24">
+        <div className="mx-auto max-w-xl px-4 py-8 pb-24 sm:px-5">
+          <div className="hoja-escritura px-5 py-8 sm:px-8">
           <h1 className="font-serif text-2xl text-ink">Sellar la carta</h1>
           <p className="mt-1.5 text-sm text-ink-soft">
             Elige a quién viaja y cuándo debe llegar. Después, el sello.
@@ -238,6 +239,7 @@ export default function EscribirPage() {
               </Button>
             </div>
           </section>
+          </div>
         </div>
       )}
     </div>

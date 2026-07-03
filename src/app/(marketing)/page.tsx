@@ -1,6 +1,5 @@
 import { PenLine, CalendarClock, MailOpen, Lock, Users, Clock } from 'lucide-react';
 import { AuthCta } from '@/components/auth/AuthCta';
-import { EnvelopeClosed } from '@/components/letters/EnvelopeClosed';
 
 const steps = [
   {
@@ -41,34 +40,75 @@ const reasons = [
 export default function LandingPage() {
   return (
     <div className="mx-auto max-w-5xl px-5">
-      <section className="flex flex-col items-center py-16 text-center sm:py-24">
-        <h1 className="max-w-2xl font-serif text-4xl leading-tight text-ink sm:text-6xl">
+      <section className="flex flex-col items-center py-14 text-center sm:py-20">
+        <h1 className="posa max-w-2xl font-serif text-4xl leading-tight text-ink sm:text-6xl">
           Escríbele a quien serás
         </h1>
-        <p className="mt-6 max-w-xl text-lg text-ink-soft">
+        <p
+          className="posa mt-6 max-w-xl text-lg text-[#5c5346]"
+          style={{ '--posa-delay': '0.08s' } as React.CSSProperties}
+        >
           Escribe una carta hoy. Nosotros la guardamos, sellada, hasta el día
           que elijas. Entonces llega — y tú la abres.
         </p>
         <AuthCta
           redirectTo="/escribir"
           mode="register"
-          className="mt-10 rounded-[4px] bg-seal px-8 py-4 text-base font-medium text-paper shadow-[var(--shadow-paper)] transition-colors hover:bg-seal-hover"
+          className="posa mt-10 rounded-full bg-gradient-to-b from-[#3a3226] to-[#241e15] px-8 pb-4 pt-3 font-hand text-[22px] font-semibold leading-none text-[#f6f1e6] shadow-[0_2px_4px_rgba(36,30,21,0.3),0_12px_26px_rgba(36,30,21,0.35),inset_0_1px_0_rgba(255,255,255,0.12)] transition-transform hover:-translate-y-0.5"
+          style={{ '--posa-delay': '0.16s' } as React.CSSProperties}
         >
-          Escribe tu primera carta
+          ✎ Escribe tu primera carta
         </AuthCta>
-        <div className="mt-16">
-          <EnvelopeClosed width={320} />
+
+        {/* El sobre par avion, posado en la mesa */}
+        <div
+          className="posa mt-16 w-full max-w-[440px]"
+          style={{ '--posa-delay': '0.26s' } as React.CSSProperties}
+        >
+          <article className="paravion">
+            <div className="estampilla">
+              <div className="motivo">
+                <div className="valor">10 AÑOS</div>
+              </div>
+            </div>
+            <div className="ondas">
+              <span />
+              <span />
+              <span />
+            </div>
+            <div>
+              <p className="para">Para</p>
+              <p className="direccion">
+                Quien serás
+                <small>dentro de diez años</small>
+              </p>
+            </div>
+            <div className="nota-fecha">
+              <span className="faltan">
+                faltan <b>10</b> años
+              </span>
+              <span className="escrita-el">
+                escrita
+                <br />
+                hoy
+              </span>
+            </div>
+            <div className="lacre" />
+          </article>
         </div>
       </section>
 
-      <section className="grid gap-8 border-t border-ink-soft/15 py-16 sm:grid-cols-3">
-        {steps.map((step) => (
-          <div key={step.title} className="flex flex-col items-start gap-3">
-            <step.icon size={28} strokeWidth={1.5} className="text-gold" />
-            <h2 className="font-serif text-xl text-ink">{step.title}</h2>
-            <p className="text-sm leading-relaxed text-ink-soft">{step.text}</p>
-          </div>
-        ))}
+      <section className="border-t border-ink-soft/15 py-16">
+        <p className="grupo">Cómo funciona</p>
+        <div className="grid gap-8 sm:grid-cols-3">
+          {steps.map((step) => (
+            <div key={step.title} className="flex flex-col items-start gap-3">
+              <step.icon size={28} strokeWidth={1.5} className="text-gold" />
+              <h2 className="font-serif text-xl text-ink">{step.title}</h2>
+              <p className="text-sm leading-relaxed text-[#5c5346]">{step.text}</p>
+            </div>
+          ))}
+        </div>
       </section>
 
       <section className="border-t border-ink-soft/15 py-16">
@@ -79,7 +119,7 @@ export default function LandingPage() {
           {reasons.map((reason) => (
             <div
               key={reason.title}
-              className="paper-surface flex flex-col gap-3 rounded-[4px] border border-ink-soft/15 p-6 shadow-[var(--shadow-paper)]"
+              className="hoja-escritura flex flex-col gap-3 p-6"
             >
               <reason.icon size={24} strokeWidth={1.5} className="text-seal" />
               <h3 className="font-serif text-lg text-ink">{reason.title}</h3>
@@ -97,7 +137,7 @@ export default function LandingPage() {
         <AuthCta
           redirectTo="/escribir"
           mode="register"
-          className="mt-8 inline-block text-sm font-medium text-seal underline-offset-4 hover:underline"
+          className="mt-8 inline-block font-hand text-xl font-semibold text-seal underline-offset-4 hover:underline"
         >
           Empezar a escribir →
         </AuthCta>

@@ -43,30 +43,32 @@ export function LetterEditor({
   );
 
   return (
-    <div className="paper-surface mx-auto w-full max-w-[68ch] px-5 pb-32 pt-10 sm:px-8">
-      <p className="mb-8 font-mono text-xs text-gold">
-        {formatDateEs(new Date())}
-      </p>
+    <div className="mx-auto w-full max-w-[72ch] px-4 pb-24 pt-4 sm:px-6 sm:pt-6">
+      <div className="hoja-escritura min-h-[72dvh] px-5 py-8 sm:px-10 sm:py-10">
+        <p className="mb-8 font-mono text-xs text-gold">
+          {formatDateEs(new Date())}
+        </p>
 
-      <input
-        value={subject}
-        maxLength={LIMITS.subjectMax}
-        onChange={(e) => onSubjectChange(e.target.value)}
-        placeholder="Asunto de la carta"
-        className="w-full border-none bg-transparent font-serif text-2xl text-ink outline-none placeholder:text-ink-soft/40"
-      />
+        <input
+          value={subject}
+          maxLength={LIMITS.subjectMax}
+          onChange={(e) => onSubjectChange(e.target.value)}
+          placeholder="Asunto de la carta"
+          className="w-full border-none bg-transparent font-serif text-2xl text-ink outline-none placeholder:text-ink-soft/40"
+        />
 
-      <textarea
-        value={body}
-        maxLength={LIMITS.bodyMax}
-        onChange={(e) => onBodyChange(e.target.value)}
-        placeholder={PROMPTS[promptIndex]}
-        className="letter-textarea mt-6 min-h-[55dvh] w-full text-ink placeholder:text-ink-soft/40"
-        autoFocus
-      />
+        <textarea
+          value={body}
+          maxLength={LIMITS.bodyMax}
+          onChange={(e) => onBodyChange(e.target.value)}
+          placeholder={PROMPTS[promptIndex]}
+          className="letter-textarea mt-6 min-h-[55dvh] w-full text-ink placeholder:text-ink-soft/40"
+          autoFocus
+        />
+      </div>
 
       <p
-        className="fixed right-5 font-mono text-xs text-ink-soft/60 sm:right-8"
+        className="fixed right-5 font-mono text-xs text-[#6f6455] sm:right-8"
         style={{ bottom: 'max(1rem, env(safe-area-inset-bottom))' }}
       >
         {wordCount} {wordCount === 1 ? 'palabra' : 'palabras'}

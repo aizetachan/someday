@@ -1,15 +1,30 @@
 'use client';
 
 /**
- * Sello de cera. `broken` lo parte en dos mitades separadas.
+ * Sello de cera. `crack` (0-2) lo va agrietando mientras se mantiene
+ * pulsado; `broken` lo parte en dos mitades separadas.
  */
 export function WaxSeal({
   size,
   broken = false,
+  crack = 0,
 }: {
   size?: number; // sin tamaño: llena el ancho del contenedor (responsive)
   broken?: boolean;
+  crack?: 0 | 1 | 2;
 }) {
+  const halfTransition = 'transform 0.3s cubic-bezier(0.3, 1.2, 0.4, 1)';
+  const leftTransform = broken
+    ? 'translate(-9px, 2px) rotate(-8deg)'
+    : crack >= 2
+      ? 'translate(-1.4px, 0.3px) rotate(-1.2deg)'
+      : undefined;
+  const rightTransform = broken
+    ? 'translate(9px, -2px) rotate(7deg)'
+    : crack >= 2
+      ? 'translate(1.4px, -0.3px) rotate(1deg)'
+      : undefined;
+
   return (
     <svg
       viewBox="0 0 100 100"
@@ -27,32 +42,69 @@ export function WaxSeal({
         </radialGradient>
       </defs>
       <g
-        style={{
-          transform: broken ? 'translate(-9px, 2px) rotate(-8deg)' : undefined,
-          transformOrigin: '50% 50%',
-          transition: 'transform 0.45s cubic-bezier(0.3, 1.2, 0.4, 1)',
-        }}
+        className={crack >= 2 && !broken ? 'tiembla' : undefined}
+        style={{ transformOrigin: '50% 50%' }}
       >
-        <clipPath id="left-half">
-          <path d="M53 -5 Q44 25 55 50 Q46 75 51 105 L-10 105 L-10 -5 Z" />
-        </clipPath>
-        <g clipPath="url(#left-half)">
-          <SealBody />
+        <g
+          style={{
+            transform: leftTransform,
+            transformOrigin: '50% 50%',
+            transition: halfTransition,
+          }}
+        >
+          <clipPath id="left-half">
+            <path d="M53 -5 Q44 25 55 50 Q46 75 51 105 L-10 105 L-10 -5 Z" />
+          </clipPath>
+          <g clipPath="url(#left-half)">
+            <SealBody />
+          </g>
         </g>
-      </g>
-      <g
-        style={{
-          transform: broken ? 'translate(9px, -2px) rotate(7deg)' : undefined,
-          transformOrigin: '50% 50%',
-          transition: 'transform 0.45s cubic-bezier(0.3, 1.2, 0.4, 1)',
-        }}
-      >
-        <clipPath id="right-half">
-          <path d="M53 -5 Q44 25 55 50 Q46 75 51 105 L110 105 L110 -5 Z" />
-        </clipPath>
-        <g clipPath="url(#right-half)">
-          <SealBody />
+        <g
+          style={{
+            transform: rightTransform,
+            transformOrigin: '50% 50%',
+            transition: halfTransition,
+          }}
+        >
+          <clipPath id="right-half">
+            <path d="M53 -5 Q44 25 55 50 Q46 75 51 105 L110 105 L110 -5 Z" />
+          </clipPath>
+          <g clipPath="url(#right-half)">
+            <SealBody />
+          </g>
         </g>
+
+        {/* Grietas: primero una fisura, luego la grieta completa con ramas */}
+        {!broken && crack >= 1 && (
+          <path
+            d="M54 28 Q48 39 55 50 Q47 62 52 74"
+            fill="none"
+            stroke="#4A130A"
+            strokeWidth="1.3"
+            strokeLinecap="round"
+            opacity="0.65"
+          />
+        )}
+        {!broken && crack >= 2 && (
+          <>
+            <path
+              d="M53 8 Q44 25 55 50 Q46 75 51 94"
+              fill="none"
+              stroke="#3E0F07"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              opacity="0.8"
+            />
+            <path
+              d="M52 34 L44 29 M54 58 L61 63"
+              fill="none"
+              stroke="#4A130A"
+              strokeWidth="1.2"
+              strokeLinecap="round"
+              opacity="0.7"
+            />
+          </>
+        )}
       </g>
     </svg>
   );

@@ -12,11 +12,13 @@ import { AuthModal } from './AuthModal';
 export function AuthCta({
   children,
   className = '',
+  style,
   redirectTo,
   mode = 'register',
 }: {
   children: ReactNode;
   className?: string;
+  style?: React.CSSProperties;
   redirectTo: string;
   mode?: 'login' | 'register';
 }) {
@@ -25,7 +27,7 @@ export function AuthCta({
 
   if (user) {
     return (
-      <Link href={redirectTo} className={className}>
+      <Link href={redirectTo} className={className} style={style}>
         {children}
       </Link>
     );
@@ -33,7 +35,12 @@ export function AuthCta({
 
   return (
     <>
-      <button type="button" onClick={() => setOpen(true)} className={className}>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className={className}
+        style={style}
+      >
         {children}
       </button>
       <AuthModal

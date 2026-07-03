@@ -549,6 +549,15 @@ html {
   width: 55%;
 }
 
+/* hoja de papel sobre la mesa: donde se escribe y se sella */
+.hoja-escritura {
+  border-radius: 3px;
+  background: linear-gradient(180deg, #fdfbf4, #f6f1e6);
+  box-shadow:
+    0 1px 2px rgb(46 40 32 / 0.1),
+    0 14px 30px rgb(46 40 32 / 0.16);
+}
+
 /* las cartas se posan en la mesa al entrar */
 @media (prefers-reduced-motion: no-preference) {
   .posa {
@@ -559,6 +568,23 @@ html {
     from {
       opacity: 0;
       transform: translateY(14px);
+    }
+  }
+
+  /* la cera tiembla justo antes de romperse */
+  .tiembla {
+    animation: temblor 0.16s linear infinite;
+  }
+  @keyframes temblor {
+    0%,
+    100% {
+      transform: rotate(0deg);
+    }
+    25% {
+      transform: rotate(-1deg);
+    }
+    75% {
+      transform: rotate(1deg);
     }
   }
 }
