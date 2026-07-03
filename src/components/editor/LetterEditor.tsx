@@ -65,7 +65,10 @@ export function LetterEditor({
         autoFocus
       />
 
-      <p className="fixed bottom-4 right-5 font-mono text-xs text-ink-soft/60 sm:right-8">
+      <p
+        className="fixed right-5 font-mono text-xs text-ink-soft/60 sm:right-8"
+        style={{ bottom: 'max(1rem, env(safe-area-inset-bottom))' }}
+      >
         {wordCount} {wordCount === 1 ? 'palabra' : 'palabras'}
       </p>
     </div>

@@ -5,11 +5,11 @@ import { AuthCta } from '@/components/auth/AuthCta';
 export default function MarketingLayout({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-dvh flex-col">
-      <header className="mx-auto flex w-full max-w-5xl items-center justify-between px-5 py-5">
-        <Link href="/" className="font-serif text-xl text-ink">
+      <header className="mx-auto flex w-full max-w-5xl items-center justify-between gap-3 px-4 py-4 sm:px-5 sm:py-5">
+        <Link href="/" className="shrink-0 font-serif text-lg text-ink sm:text-xl">
           Cartas al Futuro
         </Link>
-        <nav className="flex items-center gap-4">
+        <nav className="flex items-center gap-3 sm:gap-4">
           <AuthCta
             redirectTo="/cartas"
             mode="login"
@@ -20,9 +20,10 @@ export default function MarketingLayout({ children }: { children: ReactNode }) {
           <AuthCta
             redirectTo="/escribir"
             mode="register"
-            className="rounded-[4px] bg-seal px-4 py-2 text-sm font-medium text-paper transition-colors hover:bg-seal-hover"
+            className="whitespace-nowrap rounded-[4px] bg-seal px-3.5 py-2 text-sm font-medium text-paper transition-colors hover:bg-seal-hover sm:px-4"
           >
-            Escribir una carta
+            <span className="sm:hidden">Escribir</span>
+            <span className="hidden sm:inline">Escribir una carta</span>
           </AuthCta>
         </nav>
       </header>

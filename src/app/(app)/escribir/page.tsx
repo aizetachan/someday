@@ -92,7 +92,9 @@ export default function EscribirPage() {
             onClick={() => setStep('write')}
             className="flex items-center gap-1.5 text-sm text-ink-soft hover:text-ink"
           >
-            <ArrowLeft size={16} strokeWidth={1.5} /> Volver a la carta
+            <ArrowLeft size={16} strokeWidth={1.5} />
+            <span className="sm:hidden">La carta</span>
+            <span className="hidden sm:inline">Volver a la carta</span>
           </button>
         ) : (
           <Link

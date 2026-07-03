@@ -25,7 +25,7 @@ export function Modal({
           onClick={onClose}
         >
           <motion.div
-            className="paper-surface w-full max-w-md rounded-[4px] p-6 shadow-[var(--shadow-paper)] safe-bottom"
+            className="paper-surface max-h-[88dvh] w-full max-w-md overflow-y-auto rounded-[4px] p-6 shadow-[var(--shadow-paper)] safe-bottom"
             initial={{ y: 24, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 24, opacity: 0 }}

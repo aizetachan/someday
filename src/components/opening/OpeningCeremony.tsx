@@ -66,7 +66,7 @@ export function OpeningCeremony({ letter }: { letter: OpenedLetter }) {
         {phase !== 'open' ? (
           <motion.div
             key="envelope"
-            className="flex flex-col items-center text-center"
+            className="flex w-full max-w-sm flex-col items-center text-center"
             exit={{ opacity: 0, scale: 1.05 }}
             transition={{ duration: 0.4 }}
           >
@@ -77,12 +77,13 @@ export function OpeningCeremony({ letter }: { letter: OpenedLetter }) {
               Ha viajado {traveled} para llegar hasta aquí.
             </p>
 
-            <div className="relative mt-10">
+            <div
+              className="relative mt-10 w-full"
+              style={{ maxWidth: 300, aspectRatio: '3 / 2' }}
+            >
               <svg
-                width={300}
-                height={200}
                 viewBox="0 0 300 200"
-                className="drop-shadow-[0_12px_32px_rgb(31_27_22_/_0.15)]"
+                className="h-full w-full drop-shadow-[0_12px_32px_rgb(31_27_22_/_0.15)]"
                 aria-hidden
               >
                 <rect x="2" y="2" width="296" height="196" rx="4" fill="#EFE7DA" />
@@ -147,7 +148,7 @@ export function OpeningCeremony({ letter }: { letter: OpenedLetter }) {
                 {letter.writtenFrom ? `${letter.writtenFrom}, ` : ''}
                 {formatDateEs(written)}
               </p>
-              <h1 className="mt-3 font-serif text-3xl text-ink">
+              <h1 className="mt-3 font-serif text-2xl text-ink sm:text-3xl">
                 {letter.subject || 'Una carta para ti'}
               </h1>
             </header>

@@ -54,20 +54,20 @@ export default function CartasPage() {
       ) : (
         <>
           {/* Resumen */}
-          <div className="mt-8 grid grid-cols-3 gap-3">
-            <div className="paper-surface rounded-[4px] border border-ink-soft/15 p-4">
-              <p className="font-mono text-2xl text-seal">{inTransit.length}</p>
-              <p className="mt-1 text-xs text-ink-soft">en camino</p>
+          <div className="mt-8 grid grid-cols-3 gap-2 sm:gap-3">
+            <div className="paper-surface rounded-[4px] border border-ink-soft/15 p-3 sm:p-4">
+              <p className="font-mono text-lg text-seal sm:text-2xl">{inTransit.length}</p>
+              <p className="mt-1 text-[11px] text-ink-soft sm:text-xs">en camino</p>
             </div>
-            <div className="paper-surface rounded-[4px] border border-ink-soft/15 p-4">
-              <p className="font-mono text-2xl text-success">{delivered.length}</p>
-              <p className="mt-1 text-xs text-ink-soft">entregadas</p>
+            <div className="paper-surface rounded-[4px] border border-ink-soft/15 p-3 sm:p-4">
+              <p className="font-mono text-lg text-success sm:text-2xl">{delivered.length}</p>
+              <p className="mt-1 text-[11px] text-ink-soft sm:text-xs">entregadas</p>
             </div>
-            <div className="paper-surface rounded-[4px] border border-ink-soft/15 p-4">
-              <p className="truncate font-mono text-2xl text-gold">
+            <div className="paper-surface rounded-[4px] border border-ink-soft/15 p-3 sm:p-4">
+              <p className="truncate font-mono text-lg text-gold sm:text-2xl">
                 {next ? countdownLabel(next.deliveryDate.toDate()).replace(/^faltan? /, '') : '—'}
               </p>
-              <p className="mt-1 text-xs text-ink-soft">próxima entrega</p>
+              <p className="mt-1 text-[11px] text-ink-soft sm:text-xs">próxima entrega</p>
             </div>
           </div>
 

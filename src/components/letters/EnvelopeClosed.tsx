@@ -10,17 +10,17 @@ export function EnvelopeClosed({
   width = 280,
   sealed = true,
 }: {
-  width?: number;
+  width?: number; // ancho máximo — en pantallas estrechas se adapta
   sealed?: boolean;
 }) {
-  const height = (width * 2) / 3;
   return (
-    <div className="relative inline-block" style={{ width, height }}>
+    <div
+      className="relative inline-block w-full"
+      style={{ maxWidth: width, aspectRatio: '3 / 2' }}
+    >
       <svg
-        width={width}
-        height={height}
         viewBox="0 0 300 200"
-        className="drop-shadow-[0_8px_24px_rgb(31_27_22_/_0.12)]"
+        className="h-full w-full drop-shadow-[0_8px_24px_rgb(31_27_22_/_0.12)]"
         aria-hidden
       >
         <rect x="2" y="2" width="296" height="196" rx="4" fill="#EFE7DA" />
@@ -52,11 +52,8 @@ export function EnvelopeClosed({
         />
       </svg>
       {sealed && (
-        <div
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-          style={{ marginTop: width * 0.02 }}
-        >
-          <WaxSeal size={width * 0.24} />
+        <div className="absolute left-1/2 top-1/2 w-[24%] -translate-x-1/2 -translate-y-1/2">
+          <WaxSeal size={undefined} />
         </div>
       )}
     </div>

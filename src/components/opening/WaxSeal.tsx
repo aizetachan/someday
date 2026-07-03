@@ -4,19 +4,20 @@
  * Sello de cera. `broken` lo parte en dos mitades separadas.
  */
 export function WaxSeal({
-  size = 72,
+  size,
   broken = false,
 }: {
-  size?: number;
+  size?: number; // sin tamaño: llena el ancho del contenedor (responsive)
   broken?: boolean;
 }) {
   return (
     <svg
-      width={size}
-      height={size}
       viewBox="0 0 100 100"
       aria-hidden
-      style={{ overflow: 'visible' }}
+      style={{
+        overflow: 'visible',
+        ...(size ? { width: size, height: size } : { width: '100%', height: 'auto' }),
+      }}
     >
       <defs>
         <radialGradient id="wax" cx="38%" cy="32%" r="75%">
