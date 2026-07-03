@@ -25,17 +25,22 @@ function tzOffsetMs(date: Date, timeZone: string): number {
   return asUTC - date.getTime();
 }
 
-/** Medianoche (00:00) del día y-m-d en la tz dada, como instante UTC. */
-export function zonedMidnightToUtc(
+/** Instante UTC correspondiente a y-m-d hh:mm en la tz dada. */
+export function zonedTimeToUtc(
   year: number,
   month: number, // 1-12
   day: number,
+  hour: number,
+  minute: number,
   timeZone: string,
 ): Date {
-  const guess = Date.UTC(year, month - 1, day, 0, 0, 0);
+  const guess = Date.UTC(year, month - 1, day, hour, minute, 0);
   const offset = tzOffsetMs(new Date(guess), timeZone);
   return new Date(guess - offset);
 }
+
+/** Hora de entrega por defecto: las cartas llegan por la mañana. */
+export const DEFAULT_DELIVERY_TIME = '09:00';
 
 export function userTimezone(): string {
   try {
@@ -91,6 +96,16 @@ export function formatDateEs(date: Date, timeZone?: string): string {
     year: 'numeric',
     ...(timeZone ? { timeZone } : {}),
   }).format(date);
+}
+
+/** "3 de julio de 2027 a las 09:00" */
+export function formatDateTimeEs(date: Date, timeZone?: string): string {
+  const time = new Intl.DateTimeFormat('es-ES', {
+    hour: '2-digit',
+    minute: '2-digit',
+    ...(timeZone ? { timeZone } : {}),
+  }).format(date);
+  return `${formatDateEs(date, timeZone)} a las ${time}`;
 }
 
 /**

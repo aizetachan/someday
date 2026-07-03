@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
+import { AuthCta } from '@/components/auth/AuthCta';
 
 export default function MarketingLayout({ children }: { children: ReactNode }) {
   return (
@@ -9,18 +10,20 @@ export default function MarketingLayout({ children }: { children: ReactNode }) {
           Cartas al Futuro
         </Link>
         <nav className="flex items-center gap-4">
-          <Link
-            href="/auth/login"
+          <AuthCta
+            redirectTo="/cartas"
+            mode="login"
             className="text-sm text-ink-soft transition-colors hover:text-ink"
           >
             Entrar
-          </Link>
-          <Link
-            href="/escribir"
+          </AuthCta>
+          <AuthCta
+            redirectTo="/escribir"
+            mode="register"
             className="rounded-[4px] bg-seal px-4 py-2 text-sm font-medium text-paper transition-colors hover:bg-seal-hover"
           >
             Escribir una carta
-          </Link>
+          </AuthCta>
         </nav>
       </header>
       <main className="flex-1">{children}</main>

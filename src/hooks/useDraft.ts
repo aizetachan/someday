@@ -12,6 +12,7 @@ export interface DraftState {
   recipientEmail: string;
   recipientName: string;
   deliveryYmd: string; // "2027-07-03" — fecha elegida (tz del autor)
+  deliveryTime: string; // "09:00" — hora de entrega (tz del autor)
 }
 
 const EMPTY: DraftState = {
@@ -21,6 +22,7 @@ const EMPTY: DraftState = {
   recipientEmail: '',
   recipientName: '',
   deliveryYmd: '',
+  deliveryTime: '09:00',
 };
 
 const LS_KEY = 'cartas.draft.v1';

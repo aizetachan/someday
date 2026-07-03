@@ -9,7 +9,12 @@ import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { Spinner } from '@/components/ui/Spinner';
 import { cancelLetter, subscribeLetter } from '@/lib/firestore';
-import { countdownLabel, formatDateEs, humanDistance } from '@/lib/dates';
+import {
+  countdownLabel,
+  formatDateEs,
+  formatDateTimeEs,
+  humanDistance,
+} from '@/lib/dates';
 import { LIMITS, type Letter } from '@/lib/types';
 
 export default function LetterDetailPage() {
@@ -64,7 +69,7 @@ export default function LetterDetailPage() {
             </p>
             {delivery && (
               <p className="mt-6 font-mono text-sm text-gold">
-                Se entrega el {formatDateEs(delivery)} · {countdownLabel(delivery)}
+                Se entrega el {formatDateTimeEs(delivery)} · {countdownLabel(delivery)}
               </p>
             )}
             {cancellable && (

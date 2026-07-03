@@ -3,12 +3,13 @@
 import { useEffect, type ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { AvatarMenu } from '@/components/ui/AvatarMenu';
 import { Spinner } from '@/components/ui/Spinner';
 import { useAuth } from '@/hooks/useAuth';
 
 /**
- * Shell autenticado. /escribir queda exento del guard: el onboarding
- * permite escribir antes de registrarse (el registro llega al sellar).
+ * Shell autenticado. La plataforma requiere cuenta: sin sesión se vuelve
+ * a la landing (donde vive el popup de registro/login).
  */
 export default function AppLayout({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
@@ -17,12 +18,12 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   const isEditor = pathname?.startsWith('/escribir');
 
   useEffect(() => {
-    if (!loading && !user && !isEditor) {
-      router.replace(`/auth/login?next=${encodeURIComponent(pathname ?? '/cartas')}`);
+    if (!loading && !user) {
+      router.replace('/');
     }
-  }, [loading, user, isEditor, pathname, router]);
+  }, [loading, user, router]);
 
-  if (!isEditor && (loading || !user)) {
+  if (loading || !user) {
     return <Spinner label="Abriendo el buzón…" />;
   }
 
@@ -31,37 +32,18 @@ export default function AppLayout({ children }: { children: ReactNode }) {
       {/* En el editor la nav desaparece: pantalla completa, cero chrome */}
       {!isEditor && (
         <header className="sticky top-0 z-40 border-b border-ink-soft/10 bg-paper/90 backdrop-blur">
-          <div className="mx-auto flex w-full max-w-4xl items-center justify-between px-5 py-4">
+          <div className="mx-auto flex w-full max-w-4xl items-center justify-between px-5 py-3.5">
             <Link href="/cartas" className="font-serif text-lg text-ink">
               Cartas al Futuro
             </Link>
-            <nav className="flex items-center gap-5 text-sm">
+            <nav className="flex items-center gap-5">
               <Link
                 href="/escribir"
-                className="font-medium text-seal transition-colors hover:text-seal-hover"
+                className="rounded-[4px] bg-seal px-4 py-2 text-sm font-medium text-paper transition-colors hover:bg-seal-hover"
               >
                 Escribir
               </Link>
-              <Link
-                href="/cartas"
-                className={
-                  pathname?.startsWith('/cartas')
-                    ? 'text-ink'
-                    : 'text-ink-soft hover:text-ink'
-                }
-              >
-                Mis cartas
-              </Link>
-              <Link
-                href="/ajustes"
-                className={
-                  pathname?.startsWith('/ajustes')
-                    ? 'text-ink'
-                    : 'text-ink-soft hover:text-ink'
-                }
-              >
-                Ajustes
-              </Link>
+              <AvatarMenu />
             </nav>
           </div>
         </header>

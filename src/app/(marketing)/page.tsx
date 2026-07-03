@@ -1,22 +1,40 @@
-import Link from 'next/link';
-import { PenLine, CalendarClock, MailOpen } from 'lucide-react';
+import { PenLine, CalendarClock, MailOpen, Lock, Users, Clock } from 'lucide-react';
+import { AuthCta } from '@/components/auth/AuthCta';
 import { EnvelopeClosed } from '@/components/letters/EnvelopeClosed';
 
 const steps = [
   {
     icon: PenLine,
     title: 'Escribe',
-    text: 'Una carta a tu futuro yo, o a alguien que quieres. Con calma, como se escribían antes.',
+    text: 'Una carta a tu futuro yo, o a alguien que quieres. Con calma, sin distracciones, como se escribían antes.',
   },
   {
     icon: CalendarClock,
     title: 'Séllala',
-    text: 'Elige la fecha de entrega: en 6 meses, en 10 años. Una vez sellada, nadie puede abrirla. Ni tú.',
+    text: 'Elige el día — y hasta la hora — de entrega: en 6 meses, en 10 años. Una vez sellada, nadie puede abrirla. Ni tú.',
   },
   {
     icon: MailOpen,
     title: 'Ábrela cuando llegue',
-    text: 'El día elegido, la carta llega a su destino. Romper el sello es un pequeño acontecimiento.',
+    text: 'El momento elegido, la carta llega a su destino. Romper el sello de cera es un pequeño acontecimiento.',
+  },
+];
+
+const reasons = [
+  {
+    icon: Lock,
+    title: 'Sellada de verdad',
+    text: 'Una carta sellada es inmutable: no se puede editar, ni espiar, ni adelantar. Nadie lee su contenido — tampoco nosotros — hasta que su destinatario rompe el sello.',
+  },
+  {
+    icon: Users,
+    title: 'Para ti o para alguien más',
+    text: 'Escríbete a los 40. Deja una carta para el cumpleaños de tu madre. Un «ábrela cuando tengas 30» para tu hijo. La carta espera lo que haga falta.',
+  },
+  {
+    icon: Clock,
+    title: 'La espera es el regalo',
+    text: 'Entre escribir y abrir pasan meses o años. Lo que escribiste madura contigo, y al abrirla te encuentras con quien eras.',
   },
 ];
 
@@ -31,12 +49,13 @@ export default function LandingPage() {
           Escribe una carta hoy. Nosotros la guardamos, sellada, hasta el día
           que elijas. Entonces llega — y tú la abres.
         </p>
-        <Link
-          href="/escribir"
+        <AuthCta
+          redirectTo="/escribir"
+          mode="register"
           className="mt-10 rounded-[4px] bg-seal px-8 py-4 text-base font-medium text-paper shadow-[var(--shadow-paper)] transition-colors hover:bg-seal-hover"
         >
           Escribe tu primera carta
-        </Link>
+        </AuthCta>
         <div className="mt-16">
           <EnvelopeClosed width={320} />
         </div>
@@ -52,17 +71,36 @@ export default function LandingPage() {
         ))}
       </section>
 
+      <section className="border-t border-ink-soft/15 py-16">
+        <h2 className="text-center font-serif text-3xl text-ink">
+          Un ritual, no una app más
+        </h2>
+        <div className="mt-12 grid gap-8 sm:grid-cols-3">
+          {reasons.map((reason) => (
+            <div
+              key={reason.title}
+              className="paper-surface flex flex-col gap-3 rounded-[4px] border border-ink-soft/15 p-6 shadow-[var(--shadow-paper)]"
+            >
+              <reason.icon size={24} strokeWidth={1.5} className="text-seal" />
+              <h3 className="font-serif text-lg text-ink">{reason.title}</h3>
+              <p className="text-sm leading-relaxed text-ink-soft">{reason.text}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
       <section className="border-t border-ink-soft/15 py-16 text-center">
         <p className="mx-auto max-w-lg font-serif text-2xl italic leading-relaxed text-ink">
           «Una carta sellada es inmutable. No se puede editar, no se puede
           espiar. Solo esperar.»
         </p>
-        <Link
-          href="/escribir"
+        <AuthCta
+          redirectTo="/escribir"
+          mode="register"
           className="mt-8 inline-block text-sm font-medium text-seal underline-offset-4 hover:underline"
         >
           Empezar a escribir →
-        </Link>
+        </AuthCta>
       </section>
     </div>
   );
