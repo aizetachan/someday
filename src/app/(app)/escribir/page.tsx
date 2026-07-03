@@ -43,7 +43,8 @@ export default function EscribirPage() {
   const recipientReady =
     draft.recipientType === 'self' ||
     (/.+@.+\..+/.test(draft.recipientEmail) && draft.recipientName.trim().length > 0);
-  const canSeal = Boolean(draft.body.trim() && recipientReady && deliveryDate);
+  const deliveryInFuture = Boolean(deliveryDate && deliveryDate > new Date());
+  const canSeal = Boolean(draft.body.trim() && recipientReady && deliveryInFuture);
 
   async function seal() {
     if (!user || !deliveryDate) return;
@@ -154,7 +155,8 @@ export default function EscribirPage() {
               >
                 <span className="block font-serif text-lg text-ink">Mi futuro yo</span>
                 <span className="mt-0.5 block text-xs text-ink-soft">
-                  Te la enviaremos a ti, cuando llegue el momento.
+                  Llegará a <strong className="text-ink">{user?.email}</strong>,
+                  el email de tu cuenta.
                 </span>
               </button>
               <button
@@ -198,7 +200,7 @@ export default function EscribirPage() {
               Cuándo debe llegar
             </h2>
             <p className="mt-1 text-xs text-ink-soft">
-              Mínimo dentro de 7 días · máximo 25 años.
+              Desde hoy mismo — siempre a futuro — hasta dentro de 25 años.
             </p>
             <div className="mt-3">
               <DatePicker

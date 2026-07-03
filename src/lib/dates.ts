@@ -71,10 +71,9 @@ export function presetToYmd(months: number): { y: number; m: number; d: number }
   return { y: target.getFullYear(), m: target.getMonth() + 1, d: target.getDate() };
 }
 
+/** La fecha custom permite el mismo día: el mínimo es hoy (hora a futuro). */
 export function minDeliveryYmd(): string {
-  const min = new Date();
-  min.setDate(min.getDate() + LIMITS.minDaysAhead);
-  return toYmdString(min);
+  return toYmdString(new Date());
 }
 
 export function maxDeliveryYmd(): string {
@@ -132,15 +131,29 @@ export function humanDistance(from: Date, to: Date): string {
   }
   if (months >= 3) return months === 1 ? '1 mes' : `${months} meses`;
 
-  const days = Math.max(1, Math.round((b.getTime() - a.getTime()) / 86_400_000));
+  const ms = b.getTime() - a.getTime();
+  if (ms < 3_600_000) {
+    const mins = Math.max(1, Math.round(ms / 60_000));
+    return mins === 1 ? '1 minuto' : `${mins} minutos`;
+  }
+  if (ms < 86_400_000) {
+    const hours = Math.round(ms / 3_600_000);
+    return hours === 1 ? '1 hora' : `${hours} horas`;
+  }
+  const days = Math.round(ms / 86_400_000);
   return days === 1 ? '1 día' : `${days} días`;
 }
 
-/** "faltan 247 días" / "faltan 3 años y 2 meses" */
+/** "faltan 3 horas" / "faltan 247 días" / "faltan 3 años y 2 meses" */
 export function countdownLabel(deliveryDate: Date): string {
   const now = new Date();
   if (deliveryDate <= now) return 'llegando…';
-  const days = Math.ceil((deliveryDate.getTime() - now.getTime()) / 86_400_000);
+  const ms = deliveryDate.getTime() - now.getTime();
+  if (ms < 86_400_000) {
+    const dist = humanDistance(now, deliveryDate);
+    return dist.startsWith('1 ') ? `falta ${dist}` : `faltan ${dist}`;
+  }
+  const days = Math.ceil(ms / 86_400_000);
   if (days === 1) return 'falta 1 día';
   if (days < 400) return `faltan ${days} días`;
   return `faltan ${humanDistance(now, deliveryDate)}`;

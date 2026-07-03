@@ -69,7 +69,6 @@ export interface AppUser {
 export const LIMITS = {
   subjectMax: 120,
   bodyMax: 20_000,
-  minDaysAhead: 7,
   maxYearsAhead: 25,
   cancelWindowHours: 24,
 } as const;

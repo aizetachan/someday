@@ -69,7 +69,7 @@ export function DatePicker({
         >
           <span className="block font-serif text-lg text-ink">Fecha y hora exactas</span>
           <span className="mt-1 block text-xs text-ink-soft">
-            un cumpleaños, un aniversario, una medianoche…
+            incluso hoy mismo — un cumpleaños, una medianoche…
           </span>
         </button>
       </div>
@@ -101,12 +101,18 @@ export function DatePicker({
         </div>
       )}
 
-      {selectedDate && (
-        <p className="rounded-[4px] bg-paper-warm px-4 py-3 text-sm text-ink">
-          Se entregará el <strong>{formatDateEs(selectedDate)}</strong> a las{' '}
-          <strong>{time}</strong> — dentro de {humanDistance(now, selectedDate)}.
-        </p>
-      )}
+      {selectedDate &&
+        (selectedDate > now ? (
+          <p className="rounded-[4px] bg-paper-warm px-4 py-3 text-sm text-ink">
+            Se entregará el <strong>{formatDateEs(selectedDate)}</strong> a las{' '}
+            <strong>{time}</strong> — dentro de {humanDistance(now, selectedDate)}.
+          </p>
+        ) : (
+          <p className="rounded-[4px] border border-error/30 bg-error/5 px-4 py-3 text-sm text-error">
+            Ese momento ya pasó. Las cartas solo viajan hacia el futuro — elige
+            una hora más tarde.
+          </p>
+        ))}
     </div>
   );
 }

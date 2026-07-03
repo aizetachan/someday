@@ -118,9 +118,10 @@ La entrega es el corazón del sistema: pruébala antes de pulir nada.
   autor. Solo se puede cancelar (sin leerla) hasta 24h antes de la entrega.
 - El email de entrega **nunca contiene el cuerpo**: solo el enlace de
   apertura. La carta se abre en la plataforma.
-- Mínimo +7 días, máximo +25 años. Fechas a las 00:00 en la zona horaria del
-  autor.
-- El borrador se escribe **antes** de registrarse (localStorage); el registro
-  llega al sellar.
+- Entrega desde el mismo día (siempre a futuro) hasta +25 años, con hora
+  personalizable en la zona horaria del autor. Los presets entregan a las
+  09:00.
+- La plataforma requiere cuenta: la landing abre un popup de registro/login
+  y el borrador se autosalva (localStorage + Firestore).
 - Si el autor borra su cuenta, las cartas selladas a otras personas se
   entregan igualmente, con la autoría anonimizada.
